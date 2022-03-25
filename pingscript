@@ -1,0 +1,36 @@
+#!/bin/bash
+echo " input a IP to ping" 
+#sets the Internal field seperator to . 
+IFS='.'
+read IP
+#turns the input into an array 
+read -a array <<< "$IP" 
+
+#makes sure that the IP is the right number of octets
+
+if (( ${#array[@]} > 4 ))
+	then 
+		echo " theres to many octets in the IP"
+		exit 1
+fi 
+
+for ((i = 0; i<4; i++)) 
+do 	
+
+	#in if statements to show it is an integer us ((  )) otherwise no work
+	if (( ${array[i]} < 255 )) && (( ${array[i]} > 0 ))
+	then
+		echo ${array[i]} " Is a valid octet"
+	else 
+		echo ${array[i]} " Is not a valid octet"
+		exit 1	
+	fi
+done 
+#changes the IFS back to be able to ping
+IFS=' '
+Address=(${array[0]}\.${array[1]}\.${array[2]}\.${array[3]})
+
+ping $Address -c 1 &>/dev/null && echo " $Address is up" 
+ 
+exit
+
